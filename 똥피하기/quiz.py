@@ -30,12 +30,11 @@ character_y_pos = screen_height - character_height  #화면 세로 크기 가장
 
 # 이동할 좌표
 to_x = 0
-to_y = 0
 
 
 #이동 속도
 character_speed = 0.6
-enemy_speed = 1
+enemy_speed = 10
 
 
 #적 캐릭터 enemy
@@ -43,8 +42,8 @@ enemy = pygame.image.load("C:/Users/민균/Desktop/Pygame_first/똥피하기/ene
 enemy_size = enemy.get_rect().size #캐릭터의 가로 세로 크기 구하기 함수 
 enemy_width = enemy_size[0] #캐릭터의 가로 크기
 enemy_height = enemy_size[1] #캐릭터의 세로 크기
-enemy_x_pos = (random.randint(0,screen_width))   #화면 가로의 절반 크기에 해당하는 곳에 위치 (가로)
-enemy_y_pos = (0)  #화면 세로 크기 가장 아래에 해당하는 곳에 위치 (세로)
+enemy_x_pos = (random.randint((enemy_width),(screen_width-enemy_width)))   #랜덤 위치
+enemy_y_pos = (0)  #화면 세로 크기 가장 위에 해당하는 곳에 위치 (세로)
 
 
 # 폰트 정의 
@@ -61,10 +60,8 @@ start_ticks = pygame.time.get_ticks() #시작 tick 을 받아옴
 
 running= True #게임이 진행중인가?
 while running:
-    if enemy_y_pos < 0:
-        
     dt = clock.tick(60) # 게임화면의 초당 프레임 수를 설정
-   
+
     for event in pygame.event.get():    #어떤 이벤트가 발생하였는가?
         if  event.type == pygame.QUIT:  # 창이 닫히는 이벤트 >> x표시를 눌러 게임을 껏을 때
             running = False
@@ -85,7 +82,14 @@ while running:
                 to_y = 0
 
     character_x_pos += to_x *dt #프레임 당 속도를 맞춰주기 위해 *dt
-    character_y_pos += to_y *dt 
+   
+
+
+    #적이 화면 밖으로 나갈 때 맨위로 원위치 - x좌표 랜덤부여
+    if enemy_y_pos > screen_height:
+        enemy_y_pos = 0
+        enemy_x_pos = (random.randint(0,screen_width-enemy_width))
+
 
     #가로 경계값 처리 (캐릭터가 화면 밖으로 나갈 때)
     if character_x_pos < 0:
@@ -93,12 +97,9 @@ while running:
     elif character_x_pos > screen_width - character_width:
         character_x_pos = screen_width - character_width
 
-    #세로 경계값 처리
-    if character_y_pos < 0:
-        character_y_pos = 0
-    elif character_y_pos > screen_height - character_height:
-        character_y_pos = screen_height - character_height
+    enemy_y_pos += enemy_speed
 
+        
     #충돌 처리
     character_rect = character.get_rect()
     character_rect.left = character_x_pos
@@ -130,7 +131,7 @@ while running:
 
     #만약 시간이 0이하면 게임 종료
     if total_time - elapsed_time <=0:
-        print("타임 아웃")
+        print("클리어")
         running = False 
 
 
